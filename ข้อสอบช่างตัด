@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบเครื่อง PS-H650</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .question { margin-bottom: 20px; }
+        .result { margin-top: 20px; font-weight: bold; }
+        button { padding: 10px 20px; font-size: 16px; }
+        .fireworks { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; color: white; font-size: 3rem; display: none; flex-direction: column; }
+    </style>
+</head>
+<body>
+    <h1>แบบทดสอบเครื่อง PS-H650</h1>
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" onclick="checkAnswers()">ส่งคำตอบ</button>
+    </form>
+
+    <div id="result" class="result"></div>
+
+    <div id="passScreen" class="fireworks">
+        🎉 ผ่าน! 🎉
+        <p id="passScore"></p>
+    </div>
+    <div id="failScreen" class="fireworks">
+        ❌ ไม่ผ่าน ❌
+        <p id="failScore"></p>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "ส่วนประกอบหลักของเครื่อง PS-H650 ประกอบด้วยกี่ส่วน?", options: ["2 ส่วน", "3 ส่วน", "4 ส่วน", "5 ส่วน"], correct: 2 },
+            { question: "หน้าที่หลักของ 'โต๊ะวางถุงนอก' คืออะไร?", options: ["วางถุงสำเร็จรูป", "วางถุงกึ่งสำเร็จรูป", "วางอุปกรณ์เสริม", "วางเครื่องมือซ่อมแซม"], correct: 1 },
+            { question: "สถานีที่ 1 มีหน้าที่หลักในการทำอะไร?", options: ["ใส่ฟิล์มด้านในเข้าไปในถุงนอกและปิดผนึก", "พับและปิดผนึกถุงนอก", "รวบรวมถุงสำเร็จรูป", "ปรับอุณหภูมิของมีดปิดผนึก"], correct: 0 },
+            { question: "ฟังก์ชัน 'Servo Reset' ใช้ทำอะไร?", options: ["ปรับอุณหภูมิ", "รีเซ็ตตำแหน่งศูนย์", "เปิด/ปิด สถานี 1", "นับจำนวนถุง"], correct: 1 },
+            { question: "การตั้งค่า 'Outer Bag Width' ต้องปรับที่หน้าใด?", options: ["Main Control Page", "Station 1 Page", "Manual Page", "Parameter Setting Page"], correct: 1 },
+            { question: "การควบคุมการเคลื่อนที่ของ CAM ที่สถานี 2 ใช้ปุ่มใด?", options: ["CAM 1 Up/Down", "CAM 2 Up/Down", "Servo Reset", "Bagging Time"], correct: 1 },
+            { question: "อุณหภูมิของมีดปิดผนึกที่สถานี 2 ควรตั้งไว้ที่เท่าไหร่?", options: ["200°C", "220°C", "250°C", "280°C"], correct: 3 },
+            { question: "หากถุงนอกดูดไม่ตรงตำแหน่งในสถานี 1 ควรทำอย่างไร?", options: ["เพิ่มเวลาการดูด", "ปรับตำแหน่งแผ่นกั้นเลื่อน", "ลดอุณหภูมิ", "ปิดโหมดออนไลน์"], correct: 1 },
+            { question: "ปุ่ม 'Bagging Time' มีหน้าที่อะไร?", options: ["ควบคุมเวลาการดูด", "ควบคุมระยะเวลาในการใส่ถุง", "ควบคุมอุณหภูมิ", "เปิด/ปิด สถานี 1"], correct: 1 },
+            { question: "หากต้องการปรับมุมองศาของถุงนอกในสถานี 2 ควรใช้ตัวเลือกใด?", options: ["Opening Position Angle", "Folding Position Angle", "Thermal Position Angle", "ทั้งหมดถูกต้อง"], correct: 3 }
+        ];
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestions() {
+            shuffle(questions);
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            questions.forEach((q, index) => {
+                let optionsHtml = '';
+                q.options.forEach((option, i) => {
+                    optionsHtml += `<label><input type='radio' name='q${index}' value='${i}'> ${option}</label><br>`;
+                });
+                container.innerHTML += `<div class='question'><p>${index + 1}. ${q.question}</p>${optionsHtml}</div>`;
+            });
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name='q${index}']:checked`);
+                if (selected && parseInt(selected.value) === q.correct) {
+                    score++;
+                }
+            });
+            if (score >= 7) {
+                document.getElementById('passScore').textContent = `คะแนนของคุณ: ${score} / ${questions.length}`;
+                document.getElementById('passScreen').style.display = 'flex';
+            } else {
+                document.getElementById('failScore').textContent = `คะแนนของคุณ: ${score} / ${questions.length}`;
+                document.getElementById('failScreen').style.display = 'flex';
+            }
+        }
+
+        loadQuestions();
+    </script>
+</body>
+</html>
